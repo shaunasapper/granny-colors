@@ -12,24 +12,50 @@ import { colorWeights } from '../constants/colors'
 // ]
 
 // TODO: figure out how to evenly distribute colors
-export function generateColors(graph: string[][][], colors: string[]) {
+export function generateColors(
+  graph: string[][][],
+  colors: string[],
+  colorsPerSquare: number
+) {
   graph.forEach((row, x) => {
-    row.forEach((item, y) => {
-      if (!item.length) {
-        const neighborColors = getNeighborColors(graph, x, y)
-        const color = getRandomColor(colors, neighborColors)
-        if (!color) {
-          console.error("hm that probably shouldn't happen")
-        } else {
-          item.push(color)
-        }
+    // set base colors
+    row.forEach((square, y) => {
+      if (square.length === colorsPerSquare) {
+        return
+      }
+
+      if (!square.length) {
+        const neighborColors = getNeighborColors(graph, x, y, 0)
+        addColorToSquare(
+          square,
+          getRandomColor(colors, { exclude: neighborColors })
+        )
+      }
+    })
+
+    // set inner colors
+    row.forEach((square, y) => {
+      for (let i = 1; i < colorsPerSquare; i++) {
+        // each ring should not be repeated on a neighbor
+        // for example, neighboring squares should not both have dark blue middles
+        const exclude = _.union(getNeighborColors(graph, x, y, i), square)
+
+        addColorToSquare(square, getRandomColor(colors, { exclude }))
       }
     })
   })
 }
 
-function getRandomColor(colors: string[], excludeColors: string[]) {
-  const possibleColors = _.difference(colors, excludeColors)
+function addColorToSquare(square: string[], color: string) {
+  if (!color) {
+    throw new Error("hmm that probably shouldn't happen")
+  } else {
+    square.push(color)
+  }
+}
+
+function getRandomColor(colors: string[], { exclude }: { exclude: string[] }) {
+  const possibleColors = _.difference(colors, exclude)
 
   // get weights for each possible color
   let weights: number[] = []
@@ -60,7 +86,8 @@ function weightedRandom(items: string[], weights: number[]) {
 function getNeighborColors(
   graph: string[][][],
   x: number,
-  y: number
+  y: number,
+  colorIndex: number
 ): string[] {
   const neighbors = [
     [x - 1, y - 1], // top left
@@ -74,8 +101,11 @@ function getNeighborColors(
   ]
 
   return _.compact(
-    _.flatMap(neighbors, ([nx, ny]) => getColorFromSquare(graph[nx]?.[ny]))
+    _.flatMap(neighbors, ([nx, ny]) =>
+      getColorFromSquare(graph[nx]?.[ny], colorIndex)
+    )
   )
 }
 
-const getColorFromSquare = (square: string[] | undefined) => square?.[0]
+const getColorFromSquare = (square: string[] | undefined, colorIndex: number) =>
+  square?.[colorIndex]

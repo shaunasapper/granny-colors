@@ -14,9 +14,9 @@ export function GeneratedSquares() {
   ]
   const [graph, setGraph] = React.useState<string[][][]>([])
 
-  const rows = 5
-  const columns = 5
-  const numColors = 4
+  const rows = 10
+  const columns = 10
+  const colorsPerSquare = 4
 
   // const graph = [
   //   [[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]],
@@ -37,7 +37,7 @@ export function GeneratedSquares() {
         row.push([])
       }
     })
-    generateColors(g, colorPalette)
+    generateColors(g, colorPalette, colorsPerSquare)
     setGraph(g)
   }
 

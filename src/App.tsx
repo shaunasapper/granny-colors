@@ -1,6 +1,5 @@
 import React from 'react'
 import logo from './logo.svg'
-import './App.css'
 import { Palette } from './components/Palette'
 import { GrannySquare } from './components/GrannySquare'
 import { ALL_YARN_COLORS } from './constants/colors'
