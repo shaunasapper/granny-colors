@@ -14,6 +14,7 @@ export function GrannySquare({ colors }: { colors: string[] }) {
     >
       {colors.map((color, idx) => (
         <div
+          key={`color-${color}-${idx}`}
           className="rounded absolute"
           style={{
             width: GRANNY_SIZE - idx * 20,

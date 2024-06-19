@@ -12,3 +12,14 @@ export const ALL_YARN_COLORS = {
 
 // all colors excluding the base color
 export const colorPalette = Object.values(ALL_YARN_COLORS).slice(1)
+
+export const colorWeights = {
+  [ALL_YARN_COLORS.lightBrown]: 1,
+  [ALL_YARN_COLORS.white]: 1,
+  [ALL_YARN_COLORS.darkBlue]: 2,
+  [ALL_YARN_COLORS.lightBlue]: 2,
+  [ALL_YARN_COLORS.darkGreen]: 2,
+  [ALL_YARN_COLORS.lightGreen]: 2,
+  [ALL_YARN_COLORS.orange]: 2,
+  [ALL_YARN_COLORS.yellow]: 2,
+}

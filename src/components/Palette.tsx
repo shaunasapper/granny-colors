@@ -10,8 +10,8 @@ export function Palette() {
       >
         {Object.entries(ALL_YARN_COLORS)
           .slice(1)
-          .map(([_name, color]) => (
-            <GrannySquare colors={[color]} />
+          .map(([_name, color], i) => (
+            <GrannySquare key={`palette-${i}`} colors={[color]} />
           ))}
       </div>
     </>

@@ -3,6 +3,7 @@ import { ALL_YARN_COLORS, colorPalette } from '../constants/colors'
 import { GrannySquare } from './GrannySquare'
 import _ from 'lodash'
 import * as React from 'react'
+import { generateColors } from '../actions/generateColors'
 
 export function GeneratedSquares() {
   const test = [
@@ -13,14 +14,15 @@ export function GeneratedSquares() {
   ]
   const [graph, setGraph] = React.useState<string[][][]>([])
 
-  const rows = 10
-  const columns = 10
+  const rows = 5
+  const columns = 5
+  const numColors = 4
 
   // const graph = [
-  //   [test, test, test, test],
-  //   [test, test, test, test],
-  //   [test, test, test, test],
-  //   [test, test, test, test],
+  //   [[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]],
+  //   [[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]],
+  //   [[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]],
+  //   [[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]],
   // ]
 
   const handleGenerateSquares = () => {
@@ -31,9 +33,11 @@ export function GeneratedSquares() {
     g.forEach((row) => {
       for (let i = 0; i < columns; i++) {
         // TODO: do some fucking graph theory
-        row.push(_.sampleSize(colorPalette, 4))
+        // row.push(_.sampleSize(colorPalette, numColors))
+        row.push([])
       }
     })
+    generateColors(g, colorPalette)
     setGraph(g)
   }
 
@@ -53,8 +57,10 @@ export function GeneratedSquares() {
           gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
         }}
       >
-        {graph.map((row) =>
-          row.map((square) => <GrannySquare colors={square} />)
+        {graph.map((row, x) =>
+          row.map((square, y) => (
+            <GrannySquare key={`square-${x}-${y}`} colors={square} />
+          ))
         )}
       </div>
     </>
