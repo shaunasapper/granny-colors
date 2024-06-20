@@ -7,7 +7,7 @@ import { GeneratedSquares } from './components/GeneratedSquares'
 
 function App() {
   return (
-    <div className="p-10 flex flex-col gap-3 items-center bg-amber-50 w-screen h-screen">
+    <div className="p-10 flex flex-col gap-3 items-center w-screen h-screen">
       <h1 className="text-sky-800 text-5xl font-bold text-center">
         these ain't your granny's squares
       </h1>

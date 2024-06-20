@@ -1,7 +1,6 @@
-// sorta kinda a graph coloring implementation
-// https://gist.github.com/themindfuldev/98df011211b8cbbc2405d41682799df0
-
 import _ from 'lodash'
+import { GrannySquareGraph } from '../components/GeneratedSquares'
+import { Square } from '../components/GrannySquare'
 import { colorWeights } from '../constants/colors'
 
 // const graph = [
@@ -13,18 +12,18 @@ import { colorWeights } from '../constants/colors'
 
 // TODO: figure out how to evenly distribute colors
 export function generateColors(
-  graph: string[][][],
+  graph: GrannySquareGraph,
   colors: string[],
   colorsPerSquare: number
 ) {
   graph.forEach((row, x) => {
     // set base colors
     row.forEach((square, y) => {
-      if (square.length === colorsPerSquare) {
+      if (square.colors.length === colorsPerSquare) {
         return
       }
 
-      if (!square.length) {
+      if (!square.colors.length) {
         const neighborColors = getNeighborColors(graph, x, y, 0)
         addColorToSquare(
           square,
@@ -38,7 +37,10 @@ export function generateColors(
       for (let i = 1; i < colorsPerSquare; i++) {
         // each ring should not be repeated on a neighbor
         // for example, neighboring squares should not both have dark blue middles
-        const exclude = _.union(getNeighborColors(graph, x, y, i), square)
+        const exclude = _.union(
+          getNeighborColors(graph, x, y, i),
+          square.colors
+        )
 
         addColorToSquare(square, getRandomColor(colors, { exclude }))
       }
@@ -46,11 +48,11 @@ export function generateColors(
   })
 }
 
-function addColorToSquare(square: string[], color: string) {
+function addColorToSquare(square: Square, color: string) {
   if (!color) {
     throw new Error("hmm that probably shouldn't happen")
   } else {
-    square.push(color)
+    square.colors.push(color)
   }
 }
 
@@ -84,7 +86,7 @@ function weightedRandom(items: string[], weights: number[]) {
 }
 
 function getNeighborColors(
-  graph: string[][][],
+  graph: GrannySquareGraph,
   x: number,
   y: number,
   colorIndex: number
@@ -102,10 +104,10 @@ function getNeighborColors(
 
   return _.compact(
     _.flatMap(neighbors, ([nx, ny]) =>
-      getColorFromSquare(graph[nx]?.[ny], colorIndex)
+      getColorFromSquare(graph[nx]?.[ny]?.colors, colorIndex)
     )
   )
 }
 
-const getColorFromSquare = (square: string[] | undefined, colorIndex: number) =>
-  square?.[colorIndex]
+const getColorFromSquare = (colors: string[] | undefined, colorIndex: number) =>
+  colors?.[colorIndex]
