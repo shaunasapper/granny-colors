@@ -13,6 +13,7 @@ export function Palette() {
           .map(([_name, color], i) => (
             <GrannySquare
               key={`palette-${i}`}
+              onClick={() => {}}
               square={{ colors: [color] }}
               numColors={1}
             />

@@ -11,9 +11,11 @@ export type Square = {
 export function GrannySquare({
   square,
   numColors,
+  onClick,
 }: {
   square: Square
   numColors: number
+  onClick: () => void
 }) {
   const { colors, isDone } = square
   const [isHovering, setIsHovering] = useState(false)
@@ -23,7 +25,7 @@ export function GrannySquare({
     <div
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      onClick={() => (square.isDone = !square.isDone)}
+      onClick={onClick}
       className={`flex justify-center items-center hover:opacity-80 active:opacity-70 ${opacity}`}
       style={{
         width: GRANNY_SIZE + 20,

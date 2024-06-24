@@ -6,58 +6,57 @@ import * as React from 'react'
 import { generateColors } from '../actions/generateColors'
 
 export type GrannySquareGraph = Square[][]
+export type GraphData = {
+  rows: number
+  columns: number
+  colorsPerSquare: number
+}
 
 export function GeneratedSquares() {
-  const test = [
-    ALL_YARN_COLORS.lightGreen,
-    ALL_YARN_COLORS.yellow,
-    ALL_YARN_COLORS.orange,
-    ALL_YARN_COLORS.darkGreen,
-  ]
-  const [graph, setGraph] = React.useState<GrannySquareGraph>([])
-  const [rows, setRows] = React.useState(5)
-  const [columns, setColumns] = React.useState(5)
-  const [colorsPerSquare, setColorsPerSquare] = React.useState(4)
+  const [graph, setGraph] = React.useState<GrannySquareGraph>(() => {
+    const saved = localStorage.getItem('graph')
+    return saved ? JSON.parse(saved) : []
+  })
+  const [graphData, setGraphData] = React.useState<GraphData>(() => {
+    const saved = localStorage.getItem('graphData')
+    return saved
+      ? JSON.parse(saved)
+      : {
+          rows: 5,
+          columns: 5,
+          colorsPerSquare: 4,
+        }
+  })
+  const { rows, columns, colorsPerSquare } = graphData
 
-  React.useEffect(() => {
-    const localGraph = localStorage.getItem('graph')
-    if (localGraph) {
-      setGraph(JSON.parse(localGraph))
-    }
-  }, [])
-
-  React.useEffect(() => {
-    if (graph.length > 0) {
-      localStorage.setItem('graph', JSON.stringify(graph))
-    }
-  }, [graph])
-
-  // const graph = [
-  //   [[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]],
-  //   [[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]],
-  //   [[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]],
-  //   [[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]],
-  // ]
   function buildGraph(g: GrannySquareGraph) {
     for (let i = 0; i < rows; i++) {
       g.push([])
     }
     g.forEach((row) => {
       for (let i = 0; i < columns; i++) {
-        // TODO: do some fucking graph theory
-        // row.push(_.sampleSize(colorPalette, numColors))
         row.push({ colors: new Array<string>() })
       }
     })
   }
 
+  // yeah yeah this could be cleaner and be extracted out into a hook or
+  // whatever but these are granny squares, who cares
   React.useEffect(() => {
-    let g: GrannySquareGraph = []
-    buildGraph(g)
-    generateColors(g, colorPalette, colorsPerSquare)
-    localStorage.setItem('graph', JSON.stringify(g))
-    setGraph(g)
-  }, [rows, columns, colorsPerSquare])
+    if (graph.length > 0) {
+      localStorage.setItem('graph', JSON.stringify(graph))
+    }
+  }, [graph])
+
+  React.useEffect(() => {
+    localStorage.setItem('graphData', JSON.stringify(graphData))
+  }, [graphData])
+
+  // this is what makes the form reactive, but it breaks the local storage
+  // saving since the state is reset on every render
+  // React.useEffect(() => {
+  //   handleGenerateSquares()
+  // }, [rows, columns, colorsPerSquare])
 
   const handleGenerateSquares = React.useCallback(() => {
     let g: GrannySquareGraph = []
@@ -67,12 +66,11 @@ export function GeneratedSquares() {
     setGraph(g)
   }, [rows, columns, colorsPerSquare])
 
-  console.log(graph)
-
   return (
     <>
       <form className="flex gap-3">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* yeah yeah this is a lot of duplicated shit whatever i know it could be better */}
           <label htmlFor="rows" className="font-semibold">
             rows
           </label>
@@ -81,7 +79,9 @@ export function GeneratedSquares() {
             type="number"
             placeholder="number of rows"
             value={rows}
-            onChange={(e) => setRows(e.target.valueAsNumber)}
+            onChange={(e) => {
+              setGraphData((p) => ({ ...p, rows: e.target.valueAsNumber }))
+            }}
             className="border rounded px-3 py-1 w-36"
           />
         </div>
@@ -94,7 +94,9 @@ export function GeneratedSquares() {
             type="number"
             placeholder="number of columns"
             value={columns}
-            onChange={(e) => setColumns(e.target.valueAsNumber)}
+            onChange={(e) =>
+              setGraphData((p) => ({ ...p, columns: e.target.valueAsNumber }))
+            }
             className="border rounded px-3 py-1 w-36"
           />
         </div>
@@ -107,7 +109,12 @@ export function GeneratedSquares() {
             type="number"
             placeholder="number of colors per granny square"
             value={colorsPerSquare}
-            onChange={(e) => setColorsPerSquare(e.target.valueAsNumber)}
+            onChange={(e) =>
+              setGraphData((p) => ({
+                ...p,
+                colorsPerSquare: e.target.valueAsNumber,
+              }))
+            }
             className="border rounded px-3 py-1 w-36"
           />
         </div>
@@ -129,6 +136,13 @@ export function GeneratedSquares() {
           row.map((square, y) => (
             <GrannySquare
               key={`square-${x}-${y}`}
+              onClick={() =>
+                setGraph((prev) => {
+                  const g = [...prev]
+                  g[x][y].isDone = !g[x][y].isDone
+                  return g
+                })
+              }
               square={square}
               numColors={colorsPerSquare}
             />

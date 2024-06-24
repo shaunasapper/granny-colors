@@ -3,7 +3,11 @@ import logo from './logo.svg'
 import { Palette } from './components/Palette'
 import { GrannySquare } from './components/GrannySquare'
 import { ALL_YARN_COLORS } from './constants/colors'
-import { GeneratedSquares } from './components/GeneratedSquares'
+import {
+  GeneratedSquares,
+  GrannySquareGraph,
+  GraphData,
+} from './components/GeneratedSquares'
 
 function App() {
   return (
